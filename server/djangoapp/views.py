@@ -14,8 +14,82 @@ import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
-# from .populate import initiate
+from .models import CarMake, CarModel
+from .populate import initiate
+from django.shortcuts import render
+import requests
 
+def get_dealers(request):
+
+    url='https://u2024devenhi-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/fetchDealers'
+
+    response=requests.get(url)
+
+    dealers=response.json()
+
+    return render(
+        request,
+        'Home.html',
+        {"dealers":dealers}
+    )
+
+def get_dealers_by_state(request,state):
+
+    url=f"https://u2024devenhi-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/fetchDealers/{state}"
+
+    response=requests.get(url)
+
+    dealers=response.json()
+
+    return render(
+        request,
+        "Home.html",
+        {"dealers":dealers}
+    )
+
+import requests
+from django.shortcuts import render
+
+def get_dealer_details(request, dealer_id):
+
+    dealer_url = f"https://u2024devenhi-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/fetchDealer/{dealer_id}"
+
+    review_url = f"https://u2024devenhi-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/fetchReviews/dealer/{dealer_id}"
+
+    dealer = requests.get(dealer_url).json()
+
+    reviews = requests.get(review_url).json()
+
+    return render(
+        request,
+        "DealerDetails.html",
+        {
+            "dealer": dealer,
+            "reviews": reviews
+        }
+    )    
+
+def get_cars(request):
+
+    count = CarMake.objects.filter().count()
+
+    if count == 0:
+        initiate()
+
+    car_models = CarModel.objects.select_related('car_make')
+
+    cars=[]
+
+    for car_model in car_models:
+
+        cars.append({
+            "CarModel":car_model.name,
+            "CarMake":car_model.car_make.name
+        })
+
+    return JsonResponse({
+        "CarModels":cars
+    })
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)

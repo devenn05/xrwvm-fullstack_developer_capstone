@@ -1,0 +1,51 @@
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script>
+    function getDealerId() {
+      const parts = window.location.pathname.split("/");
+      return parts[parts.length - 1];
+    }
+
+    function submitReview(e) {
+      e.preventDefault();
+
+      const reviewText = document.getElementById("reviewtext").value.trim();
+      if (!reviewText) {
+        alert("Please enter a review first.");
+        return;
+      }
+
+      const dealerId = getDealerId();
+      localStorage.setItem(`dealer_review_${dealerId}`, reviewText);
+
+      window.location.href = `/djangoapp/dealer/${dealerId}`;
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container mt-5" style="max-width: 700px;">
+    <h2>Post Review</h2>
+
+    <form onsubmit="submitReview(event)">
+      <div class="mb-3">
+        <label class="form-label">Review</label>
+        <textarea id="reviewtext" class="form-control" rows="5" placeholder="Write your review here"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Car</label>
+        <select class="form-control">
+          <option>Toyota Camry</option>
+          <option>Nissan Pathfinder</option>
+          <option>Honda Civic</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+  </div>
+</body>
+</html>
