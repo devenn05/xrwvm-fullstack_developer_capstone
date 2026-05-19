@@ -13,6 +13,7 @@ from django.contrib.auth import login, authenticate
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
 # from .populate import initiate
 
 
@@ -38,9 +39,14 @@ def login_user(request):
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
-# Create a `logout_request` view to handle sign out request
-# def logout_request(request):
-# ...
+def logout_request(request):
+    logout(request)
+
+    data = {
+        "userName": ""
+    }
+
+    return JsonResponse(data)
 
 # Create a `registration` view to handle sign up request
 # @csrf_exempt
